@@ -1,18 +1,51 @@
 import logo from "./logo.svg";
 import "./App.scss";
 import { useState } from "react";
-import NewQuestion from "./components/newQuestion"
+import QuestionCell from "./components/newQuestion"
+
+const data = {
+  questions:[
+    {
+      question: "",
+      answer: ""
+    }
+  ]
+}
 
 function App() {
   var quotes = [
     "이제는 진짜 자소서 뿐이야",
     "아직 늦지 않았다!!!",
     "진짜 써야된다",
+    "어느 날 최애가 우리 집에 오면 먹여 살릴 정도는 되어야 한단말야",
+    "내가 최고다"
   ];
   const [title, setTitle] = useState(
     quotes[Math.floor(Math.random() * quotes.length)]
   );
   const [titleInput, setTitleInput] = useState(false);
+  const [textData, setTextData] = useState(data);
+
+  const setQuestionInfo = (index, type, text) => {
+    var newTextData = textData
+    newTextData.questions[index][type] = text
+    setTextData({...newTextData})
+    console.log(newTextData);
+  }
+  const newQuestion = () => {
+    const newTextData = textData
+    newTextData.questions.push({question:"", answer:""})
+    setTextData({...newTextData})
+  }
+  const removeQuestion = (index) => {
+    const newTextData = textData
+    if (window.confirm("정말 이 항목을 삭제하실 건가요? 삭제된 항목은 되돌릴 수 없어요!")) {
+      newTextData.questions.splice(index,1)
+      setTextData({...newTextData})
+    }
+  }
+
+
 
   return (
     <div className="container">
@@ -29,6 +62,7 @@ function App() {
                   setTitleInput(false)
                 }
               }}
+              onBlur={()=>setTitleInput(false)}
               autoFocus
             ></input>
           </div>
@@ -51,8 +85,19 @@ function App() {
         </div>
       </header>
       <div>
-        <NewQuestion color="pink"/>
+        {textData.questions.map((question, index) => (<QuestionCell  key={index} index={index} questionInfo={question} setQuestionInfo={setQuestionInfo} removeQuestion={removeQuestion}/>))}
+        <button className="button add" onClick={()=>newQuestion()}>
+          + 항목 추가하기
+        </button>
       </div>
+      <footer>
+        <div className="emphasize">저장필수!!! (현재 저장독촉 주기: 5분)</div>
+        <div>
+          <button className="button medium">PDF로 저장하기</button>
+          <button className="button medium">txt로 저장하기</button>
+          <button className="button medium">JPG로 저장하기</button>
+        </div>
+      </footer>
     </div>
   );
 }
