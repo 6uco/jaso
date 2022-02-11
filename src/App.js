@@ -2,6 +2,9 @@ import logo from "./logo.svg";
 import "./App.scss";
 import { useState } from "react";
 import QuestionCell from "./components/newQuestion"
+import downloadTxtFile from "./components/downloadTXT"
+import downloadDocxFile from "./components/downloadDOCX"
+import downloadPngFile from "./components/downloadPNG"
 
 const data = {
   questions:[
@@ -15,10 +18,9 @@ const data = {
 function App() {
   var quotes = [
     "이제는 진짜 자소서 뿐이야",
-    "아직 늦지 않았다!!!",
-    "진짜 써야된다",
-    "어느 날 최애가 우리 집에 오면 먹여 살릴 정도는 되어야 한단말야",
-    "내가 최고다"
+    "지금 쓰면 안늦음!!!",
+    "내가 최고다",
+    "나는 면접장을 찢어 그걸해"
   ];
   const [title, setTitle] = useState(
     quotes[Math.floor(Math.random() * quotes.length)]
@@ -84,18 +86,18 @@ function App() {
           <button className="button">자.꾸.(자소서 꾸미기)</button>
         </div>
       </header>
-      <div>
+      <div id="capture">
         {textData.questions.map((question, index) => (<QuestionCell  key={index} index={index} questionInfo={question} setQuestionInfo={setQuestionInfo} removeQuestion={removeQuestion}/>))}
-        <button className="button add" onClick={()=>newQuestion()}>
+        <button className="button add ignore" onClick={()=>newQuestion()}>
           + 항목 추가하기
         </button>
       </div>
       <footer>
         <div className="emphasize">저장필수!!! (현재 저장독촉 주기: 5분)</div>
         <div>
-          <button className="button medium">PDF로 저장하기</button>
-          <button className="button medium">txt로 저장하기</button>
-          <button className="button medium">JPG로 저장하기</button>
+          <button className="button medium" onClick={()=>downloadDocxFile(textData.questions)}>.docx</button>
+          <button className="button medium" onClick={()=>downloadTxtFile(textData.questions)}>.txt</button>
+          <button className="button medium" onClick={()=>downloadPngFile()}>.png</button>
         </div>
       </footer>
     </div>

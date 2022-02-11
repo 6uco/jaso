@@ -4,6 +4,7 @@ import "../styles/bubbles.scss";
 export default function QuestionCell(props) {
   const { custom, index, questionInfo, setQuestionInfo, removeQuestion } = props;
   const [edit, setEdit] = useState("");
+
   return (
     <div className="conversation">
       <div className="container row left auto ac">
@@ -16,6 +17,11 @@ export default function QuestionCell(props) {
               placeholder="어떤 항목이 나를 반길까..?"
               value={questionInfo.question}
               onBlur={() => setEdit("")}
+              onKeyPress={(ev) => {
+                if (ev.key === "Enter") {
+                  setEdit("")
+                }
+              }}
               onChange={(e) => setQuestionInfo(index, "question", e.target.value)}
               autoFocus
             ></input>
@@ -25,8 +31,8 @@ export default function QuestionCell(props) {
             {questionInfo.question ? questionInfo.question : "여기를 클릭해서 질문 내용을 입력!!"}
           </div>
         )}
-        <div className="button" onClick={()=>removeQuestion(index)}>
-          삭제
+        <div className="button small ignore" onClick={()=>removeQuestion(index)}>
+        <span className="material-icons">delete</span>
         </div>
       </div>
       <div className="answer">
@@ -45,7 +51,7 @@ export default function QuestionCell(props) {
           {questionInfo.answer ? questionInfo.answer : "여기를 클릭해서 답변 내용을 입력!!"}
         </div>
       )}
-      <div className="counter">공백엔터포함: {questionInfo.answer.length.toLocaleString("ko-KR")}자</div>
+      <div className="counter ignore">공백엔터포함: {questionInfo.answer.length.toLocaleString("ko-KR")}자 / 공백제외: {questionInfo.answer.replace(/ /g,"").length.toLocaleString("ko-KR")}자</div>
       </div>
     </div>
   );
