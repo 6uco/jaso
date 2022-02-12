@@ -1,6 +1,6 @@
 import logo from "./logo.svg";
 import "./App.scss";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import QuestionCell from "./components/newQuestion"
 import downloadTxtFile from "./components/downloadTXT"
 import downloadDocxFile from "./components/downloadDOCX"
@@ -28,11 +28,19 @@ function App() {
   const [titleInput, setTitleInput] = useState(false);
   const [textData, setTextData] = useState(data);
 
+  useEffect(() => {
+    const savedTextData = window.localStorage.getItem("textData")
+    if((savedTextData) != undefined){
+      setTextData(JSON.parse(savedTextData))
+    }
+  },[])
+
   const setQuestionInfo = (index, type, text) => {
     var newTextData = textData
     newTextData.questions[index][type] = text
     setTextData({...newTextData})
-    console.log(newTextData);
+    window.localStorage.setItem("textData", JSON.stringify(newTextData))
+    // console.log(newTextData);
   }
   const newQuestion = () => {
     const newTextData = textData

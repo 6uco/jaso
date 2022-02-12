@@ -8,6 +8,7 @@
 
 .question{
     background-color: rgb(241, 241, 252);
+    will-change: filter;
     filter: drop-shadow(5px 5px 10px $shadow-gray);
     // box-shadow: 5px 5px 10px $shadow-gray;
     padding: 1em 1.2em;
@@ -33,6 +34,7 @@
 
 .answer{
     background-color: white;
+    will-change: filter;
     // box-shadow: 5px 5px 10px $shadow-gray;
     filter: drop-shadow(5px 5px 10px $shadow-gray);
     padding: 1em 1.2em;
