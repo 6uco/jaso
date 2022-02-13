@@ -6,6 +6,7 @@ import downloadTxtFile from "./components/downloadTXT"
 import downloadDocxFile from "./components/downloadDOCX"
 import downloadPngFile from "./components/downloadPNG"
 import {Header, Container, Button} from "./emotions"
+import DraggableModal from "./components/draggableModal"
 
 const data = {
   questions:[
@@ -28,6 +29,15 @@ function App() {
   );
   const [titleInput, setTitleInput] = useState(false);
   const [textData, setTextData] = useState(data);
+  const [openModal, setOpenModal] = useState(false);
+  const handleOpenModal = () => {
+    setOpenModal(true)
+    console.log(openModal);
+  }
+  const handleCloseModal = () => {
+    setOpenModal(false)
+    console.log(openModal);
+  }
 
   useEffect(() => {
     const savedTextData = window.localStorage.getItem("textData")
@@ -59,7 +69,8 @@ function App() {
 
 
   return (
-    <Container>
+    <Container style={{position:"relative"}}>
+      <DraggableModal open={openModal}  onClose={handleCloseModal}/>
       <Header>
         {titleInput ? (
           <div className="title-input">
@@ -91,7 +102,7 @@ function App() {
           <Button onClick={()=>setTitle(quotes[Math.floor(Math.random() * quotes.length)])}>
             랜덤 문구 사용하기
           </Button>
-          <Button>자.꾸.(자소서 꾸미기)</Button>
+          <Button onClick={handleOpenModal}>자.꾸.(자소서 꾸미기)</Button>
         </Container>
       </Header>
       <div id="capture">
@@ -103,7 +114,7 @@ function App() {
       <footer>
         <div className="emphasize">저장필수!!! (현재 저장독촉 주기: 5분)</div>
         <div>
-          <Button onClick={()=>downloadDocxFile(textData.questions)}>.docx</Button>
+          <Button emotion={{color:"blue", backgroundColor:"yellow"}} onClick={()=>downloadDocxFile(textData.questions)}>.docx</Button>
           <Button onClick={()=>downloadPngFile()}>.png</Button>
           <Button onClick={()=>downloadTxtFile(textData.questions)}>.txt</Button>
         </div>

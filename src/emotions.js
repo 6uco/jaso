@@ -1,8 +1,10 @@
 import {css} from "@emotion/react"
 import styled from "@emotion/styled"
 
+const shadowGray = "rgba(206, 206, 206, 0.3)"
+
 const headerStyle = props => 
-    css `
+    css`
     header{
         margin-top: .3em;
         // background-color: antiquewhite;
@@ -24,7 +26,7 @@ const headerStyle = props =>
     `
 
 const containerStyle = props => 
-      css `
+      css`
         // background-color: cornsilk;
         width: 100%;
         max-width: 100%;
@@ -47,7 +49,7 @@ const containerStyle = props =>
       `
 
 const buttonStyle = props =>
-    css `
+    css`
         font-size: inherit;
         padding: .4em .8em;
         // background-color: crimson;
@@ -91,14 +93,15 @@ export const Button = styled.button({
     padding: ".4em .8em",
     backgroundColor: "white",
     border: "1.5px solid lightgray",
-    boxShadow: "!5px 5px 10px $shadow-gray",
+    boxShadow: "5px 5px 10px "+shadowGray,
     borderRadius: ".8em",
     fontFamily: "$font-2",
     cursor: "pointer",
     transition: "all .2s ease",
+    color: "red",
     marginTop: "2.5px",
     "&:hover":{
-        boxShadow: "5px 7.5px 10px $shadow-gray",
+        boxShadow: "5px 7.5px 10px "+shadowGray,
         marginTop: "0px",
         marginBottom: "2.5px",
     },
@@ -119,4 +122,4 @@ export const Button = styled.button({
         borderRadius: "2em",
         marginLeft: ".5em",
     }
-});
+}, props => (props.emotion));
