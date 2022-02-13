@@ -5,6 +5,7 @@ import QuestionCell from "./components/newQuestion"
 import downloadTxtFile from "./components/downloadTXT"
 import downloadDocxFile from "./components/downloadDOCX"
 import downloadPngFile from "./components/downloadPNG"
+import {Header, Container, Button} from "./emotions"
 
 const data = {
   questions:[
@@ -58,8 +59,8 @@ function App() {
 
 
   return (
-    <div className="container">
-      <header>
+    <Container>
+      <Header>
         {titleInput ? (
           <div className="title-input">
             <input
@@ -79,36 +80,35 @@ function App() {
         ) : (
           <div className="title">{title}</div>
         )}
-        <div className="container row right">
-          <button
-            className="button"
+        <Container className="row right" style={{fontSize:".2em"}}>
+          <Button
             onClick={() => {
               setTitleInput(!titleInput)
             }}
           >
             격려 문구 바꾸기
-          </button>
-          <button className="button" onClick={()=>setTitle(quotes[Math.floor(Math.random() * quotes.length)])}>
+          </Button>
+          <Button onClick={()=>setTitle(quotes[Math.floor(Math.random() * quotes.length)])}>
             랜덤 문구 사용하기
-          </button>
-          <button className="button">자.꾸.(자소서 꾸미기)</button>
-        </div>
-      </header>
+          </Button>
+          <Button>자.꾸.(자소서 꾸미기)</Button>
+        </Container>
+      </Header>
       <div id="capture">
         {textData.questions.map((question, index) => (<QuestionCell  key={index} index={index} questionInfo={question} setQuestionInfo={setQuestionInfo} removeQuestion={removeQuestion}/>))}
-        <button className="button add ignore" onClick={()=>newQuestion()}>
+        <Button className="Button add ignore" onClick={()=>newQuestion()}>
           + 항목 추가하기
-        </button>
+        </Button>
       </div>
       <footer>
         <div className="emphasize">저장필수!!! (현재 저장독촉 주기: 5분)</div>
         <div>
-          <button className="button medium" onClick={()=>downloadDocxFile(textData.questions)}>.docx</button>
-          <button className="button medium" onClick={()=>downloadTxtFile(textData.questions)}>.txt</button>
-          <button className="button medium" onClick={()=>downloadPngFile()}>.png</button>
+          <Button onClick={()=>downloadDocxFile(textData.questions)}>.docx</Button>
+          <Button onClick={()=>downloadPngFile()}>.png</Button>
+          <Button onClick={()=>downloadTxtFile(textData.questions)}>.txt</Button>
         </div>
       </footer>
-    </div>
+    </Container>
   );
 }
 
