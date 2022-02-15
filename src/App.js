@@ -7,6 +7,8 @@ import downloadDocxFile from "./components/downloadDOCX"
 import downloadPngFile from "./components/downloadPNG"
 import {Header, Container, Button} from "./emotions"
 import DraggableModal from "./components/draggableModal"
+import { Global, css } from "@emotion/react"
+import { defaultTheme } from "./themes"
 
 const data = {
   questions:[
@@ -16,6 +18,12 @@ const data = {
     }
   ]
 }
+
+// const styles = {
+//   header:{
+//     visible: true,
+//   }
+// }
 
 function App() {
   var quotes = [
@@ -30,6 +38,9 @@ function App() {
   const [titleInput, setTitleInput] = useState(false);
   const [textData, setTextData] = useState(data);
   const [openModal, setOpenModal] = useState(false);
+  // const [tmp, setTmp] = useState(1)
+  const [styles, setStyles] = useState(defaultTheme)
+
   const handleOpenModal = () => {
     setOpenModal(true)
     console.log(openModal);
@@ -37,6 +48,16 @@ function App() {
   const handleCloseModal = () => {
     setOpenModal(false)
     console.log(openModal);
+  }
+  const handleStyles = (e, component, value) => {
+    let newStyles = styles
+    console.log(e, component, e.target.id, value);
+    newStyles[component][e.target.id] = value
+    if(value === "GilbeotTG"){
+      newStyles[component].color = "text"
+    }
+    setStyles({...newStyles})
+    console.log(newStyles);
   }
 
   useEffect(() => {
@@ -63,6 +84,7 @@ function App() {
     if (window.confirm("정말 이 항목을 삭제하실 건가요? 삭제된 항목은 되돌릴 수 없어요!")) {
       newTextData.questions.splice(index,1)
       setTextData({...newTextData})
+      window.localStorage.setItem("textData", JSON.stringify(newTextData))
     }
   }
 
@@ -70,8 +92,33 @@ function App() {
 
   return (
     <Container style={{position:"relative"}}>
-      <DraggableModal open={openModal}  onClose={handleCloseModal}/>
-      <Header>
+      <Global 
+        styles = {
+          css`
+
+          body{
+            font-family: 'Pretendard-Regular';
+            font-weight: 200;
+            font-size: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            width: 100%;
+            max-width: 100%;
+            background-color: white;
+            // background-color: darkkhaki;
+          }
+
+          #root{
+            width: 60em;
+            max-width: 100%;
+          }
+          `
+        }
+      />
+      <DraggableModal open={openModal}  onClose={handleCloseModal} handleStyles={handleStyles} styles={styles}/>
+      <Header styles={styles.header}>
         {titleInput ? (
           <div className="title-input">
             <input
@@ -91,32 +138,35 @@ function App() {
         ) : (
           <div className="title">{title}</div>
         )}
-        <Container className="row right" style={{fontSize:".2em"}}>
+        
+      </Header>
+      <Container className="row right" style={{fontSize:".8em"}}>
           <Button
             onClick={() => {
               setTitleInput(!titleInput)
             }}
+            style={{display: styles.header.display}}
+            styles={styles.button}
           >
             격려 문구 바꾸기
           </Button>
-          <Button onClick={()=>setTitle(quotes[Math.floor(Math.random() * quotes.length)])}>
+          <Button styles={styles.button} onClick={()=>setTitle(quotes[Math.floor(Math.random() * quotes.length)])} style={{display: styles.header.display}}>
             랜덤 문구 사용하기
           </Button>
-          <Button onClick={handleOpenModal}>자.꾸.(자소서 꾸미기)</Button>
+          <Button styles={styles.button} onClick={handleOpenModal}>자.꾸.(자소서 꾸미기)</Button>
         </Container>
-      </Header>
       <div id="capture">
-        {textData.questions.map((question, index) => (<QuestionCell  key={index} index={index} questionInfo={question} setQuestionInfo={setQuestionInfo} removeQuestion={removeQuestion}/>))}
-        <Button className="Button add ignore" onClick={()=>newQuestion()}>
+        {textData.questions.map((question, index) => (<QuestionCell  questionStyle={styles.question} answerStyle={styles.answer} key={index} index={index} questionInfo={question} setQuestionInfo={setQuestionInfo} removeQuestion={removeQuestion}/>))}
+        <Button className="add ignore" onClick={()=>newQuestion()}>
           + 항목 추가하기
         </Button>
       </div>
       <footer>
         <div className="emphasize">저장필수!!! (현재 저장독촉 주기: 5분)</div>
         <div>
-          <Button emotion={{color:"blue", backgroundColor:"yellow"}} onClick={()=>downloadDocxFile(textData.questions)}>.docx</Button>
-          <Button onClick={()=>downloadPngFile()}>.png</Button>
-          <Button onClick={()=>downloadTxtFile(textData.questions)}>.txt</Button>
+          <Button styles={styles.button} emotion={{color:"blue", backgroundColor:"yellow"}} onClick={()=>downloadDocxFile(textData.questions)}>.docx</Button>
+          <Button styles={styles.button} onClick={()=>downloadPngFile()}>.png</Button>
+          <Button styles={styles.button} onClick={()=>downloadTxtFile(textData.questions)}>.txt</Button>
         </div>
       </footer>
     </Container>
