@@ -1,16 +1,16 @@
-import logo from "./logo.svg";
 import "./App.scss";
 import { useEffect, useState } from "react";
 import QuestionCell from "./components/newQuestion"
 import downloadTxtFile from "./components/downloadTXT"
 import downloadDocxFile from "./components/downloadDOCX"
 import downloadPngFile from "./components/downloadPNG"
-import {Header, Container, Button} from "./emotions"
+import {Header, Container, Button, mq} from "./emotions"
 import DraggableModal from "./components/draggableModal"
 import { Global, css } from "@emotion/react"
 import { defaultTheme } from "./themes"
 
 const data = {
+  title: "",
   questions:[
     {
       question: "",
@@ -18,12 +18,6 @@ const data = {
     }
   ]
 }
-
-// const styles = {
-//   header:{
-//     visible: true,
-//   }
-// }
 
 function App() {
   var quotes = [
@@ -33,7 +27,7 @@ function App() {
     "나는 면접장을 찢어 그걸해"
   ];
   const [title, setTitle] = useState(
-    quotes[Math.floor(Math.random() * quotes.length)]
+    data.title !== "" ? data.title : quotes[Math.floor(Math.random() * quotes.length)]
   );
   const [titleInput, setTitleInput] = useState(false);
   const [textData, setTextData] = useState(data);
@@ -49,10 +43,9 @@ function App() {
     setOpenModal(false)
     console.log(openModal);
   }
-  const handleStyles = (e, component, value) => {
+  const handleStyles = (id, component, value) => {
     let newStyles = styles
-    console.log(e, component, e.target.id, value);
-    newStyles[component][e.target.id] = value
+    newStyles[component][id] = value
     if(value === "GilbeotTG"){
       newStyles[component].color = "text"
     }
@@ -62,11 +55,19 @@ function App() {
 
   useEffect(() => {
     const savedTextData = window.localStorage.getItem("textData")
-    if((savedTextData) != undefined){
+    if((savedTextData) !== (undefined || null )){
       setTextData(JSON.parse(savedTextData))
+      setTitle(JSON.parse(savedTextData).title != "" ? JSON.parse(savedTextData).title : quotes[Math.floor(Math.random() * quotes.length)])
     }
   },[])
-
+  const setTitleInfo = (value) => {
+    setTitle(value)
+    var newTextData = textData
+    newTextData.title = value
+    setTextData({...newTextData})
+    console.log(newTextData);
+    window.localStorage.setItem("textData", JSON.stringify(newTextData))
+  }
   const setQuestionInfo = (index, type, text) => {
     var newTextData = textData
     newTextData.questions[index][type] = text
@@ -85,6 +86,7 @@ function App() {
       newTextData.questions.splice(index,1)
       setTextData({...newTextData})
       window.localStorage.setItem("textData", JSON.stringify(newTextData))
+      console.log(JSON.stringify(newTextData))
     }
   }
 
@@ -93,28 +95,26 @@ function App() {
   return (
     <Container style={{position:"relative"}}>
       <Global 
-        styles = {
-          css`
-
-          body{
-            font-family: 'Pretendard-Regular';
-            font-weight: 200;
-            font-size: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            width: 100%;
-            max-width: 100%;
-            background-color: white;
-            // background-color: darkkhaki;
-          }
-
-          #root{
-            width: 60em;
-            max-width: 100%;
-          }
-          `
+        styles = {{
+          body:{
+            fontFamily: "Pretendard-Regular",
+            fontWeight: "200",
+            fontSize: "20px",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            flexDirection: "column",
+            width: "100%",
+            maxWidth: "100%",
+            backgroundColor: "white",
+            [mq[1]]:{
+              fontSize: "15px"
+            }
+          },
+          "#root":{
+            width: "60em",
+            maxWidth: "100%",
+          }}
         }
       />
       <DraggableModal open={openModal}  onClose={handleCloseModal} handleStyles={handleStyles} styles={styles}/>
@@ -125,7 +125,7 @@ function App() {
               type="text"
               id="title"
               value={title}
-              onChange={(e)=>setTitle(e.target.value)}
+              onChange={(e)=>setTitleInfo(e.target.value)}
               onKeyPress={(ev) => {
                 if (ev.key === "Enter") {
                   setTitleInput(false)
@@ -148,15 +148,17 @@ function App() {
             style={{display: styles.header.display}}
             styles={styles.button}
           >
-            격려 문구 바꾸기
+          {styles.button.iconButton ? <span class="material-icons">border_color</span> : "제목 바꾸기"}
           </Button>
-          <Button styles={styles.button} onClick={()=>setTitle(quotes[Math.floor(Math.random() * quotes.length)])} style={{display: styles.header.display}}>
-            랜덤 문구 사용하기
+          <Button styles={styles.button} onClick={()=>{setTitleInfo(""); setTitle(quotes[Math.floor(Math.random() * quotes.length)]);}} style={{display: styles.header.display}}>
+          {styles.button.iconButton ? <span class="material-icons">casino</span> : "랜덤 제목 사용하기"}
           </Button>
-          <Button styles={styles.button} onClick={handleOpenModal}>자.꾸.(자소서 꾸미기)</Button>
+          <Button styles={styles.button} onClick={handleOpenModal}>
+            {styles.button.iconButton ? <span class="material-icons">local_florist</span> : "자.꾸.(자소서 꾸미기)"}
+          </Button>
         </Container>
       <div id="capture">
-        {textData.questions.map((question, index) => (<QuestionCell  questionStyle={styles.question} answerStyle={styles.answer} key={index} index={index} questionInfo={question} setQuestionInfo={setQuestionInfo} removeQuestion={removeQuestion}/>))}
+        {textData.questions.map((question, index) => (<QuestionCell buttonStyle={styles.button} questionStyle={styles.question} answerStyle={styles.answer} key={index} index={index} questionInfo={question} setQuestionInfo={setQuestionInfo} removeQuestion={removeQuestion}/>))}
         <Button className="add ignore" onClick={()=>newQuestion()}>
           + 항목 추가하기
         </Button>
@@ -164,9 +166,10 @@ function App() {
       <footer>
         <div className="emphasize">저장필수!!! (현재 저장독촉 주기: 5분)</div>
         <div>
-          <Button styles={styles.button} emotion={{color:"blue", backgroundColor:"yellow"}} onClick={()=>downloadDocxFile(textData.questions)}>.docx</Button>
-          <Button styles={styles.button} onClick={()=>downloadPngFile()}>.png</Button>
-          <Button styles={styles.button} onClick={()=>downloadTxtFile(textData.questions)}>.txt</Button>
+          <Button>삭제</Button>
+          <Button styles={styles.button} emotion={{color:"blue", backgroundColor:"yellow"}} onClick={()=>downloadDocxFile(textData.questions)}>{styles.button.iconButton ? <span class="material-icons">description</span> : ".docx"}</Button>
+          <Button styles={styles.button} onClick={()=>downloadPngFile()}>{styles.button.iconButton ? <span class="material-icons">image</span> : ".png"}</Button>
+          <Button styles={styles.button} onClick={()=>downloadTxtFile(textData.questions)}>{styles.button.iconButton ? <span class="material-icons">title</span> : ".txt"}</Button>
         </div>
       </footer>
     </Container>

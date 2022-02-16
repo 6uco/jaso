@@ -9,13 +9,31 @@ export const defaultTheme = {
         b: 0,
         a: 1,
       },
+      useTextShadow: false,
+      textShadow:"unset",
+      textShadowProps:{
+          x: 1,
+          y: 1,
+          blur: 2,
+          rgba: {
+            r: 0,
+            g: 0,
+            b: 0,
+            a: 0.5,
+        },
+      },
       backgroundColor: "rgba(0,0,0,0)",
       backgroundColorRgba: {
         r: 0,
         g: 0,
         b: 0,
         a: 0,
-      }
+      },
+    //   borderImageSlice: "27 27 27 27",
+    //   borderImageWidth: "20px 20px 20px 20px",
+    //   borderImageOutset: "0 0 0 0",
+    //   borderImageRepeat: "stretch stretch",
+    //   borderImageSource: 'url("https://mdn.mozillademos.org/files/6011/border-image-3.png")'
     },
     question:{
       visible: true,
@@ -27,13 +45,31 @@ export const defaultTheme = {
         b: 0,
         a: 1,
       },
+      useTextShadow: false,
+      textShadow:"unset",
+      textShadowProps:{
+        x: 1,
+        y: 1,
+        blur: 2,
+        rgba: {
+          r: 0,
+          g: 0,
+          b: 0,
+          a: 0.5,
+      },
+    },
       backgroundColor: "rgba(234, 234, 255, .5)",
       backgroundColorRgba: {
         r: 234,
         g: 234,
         b: 255,
         a: .5,
-      }
+      },
+    //     borderImageSlice: "27 27 27 27",
+    //   borderImageWidth: "20px 20px 20px 20px",
+    //   borderImageOutset: "0 0 0 0",
+    //   borderImageRepeat: "stretch stretch",
+    //   borderImageSource: 'url("https://mdn.mozillademos.org/files/6011/border-image-3.png")'
     },
     answer:{
       fontFamily: "Pretendard-Regular",
@@ -44,6 +80,19 @@ export const defaultTheme = {
         b: 0,
         a: 1,
       },
+      useTextShadow: false,
+      textShadow:"unset",
+      textShadowProps:{
+        x: 1,
+        y: 1,
+        blur: 2,
+        rgba: {
+          r: 0,
+          g: 0,
+          b: 0,
+          a: 0.5,
+      },
+    },
       backgroundColor: "rgba(0,0,0,0)",
       backgroundColorRgba: {
         r: 0,
@@ -53,6 +102,7 @@ export const defaultTheme = {
       }
     },
     button:{
+        iconButton: false,
         fontFamily: "Pretendard-Regular",
         color: "rgba(0,0,0,1)",
         colorRgba: {
@@ -60,6 +110,19 @@ export const defaultTheme = {
           g: 0,
           b: 0,
           a: 1,
+        },
+      useTextShadow: false,
+      textShadow:"unset",
+        textShadowProps:{
+            x: 1,
+            y: 1,
+            blur: 2,
+            rgba: {
+              r: 0,
+              g: 0,
+              b: 0,
+              a: 0.5,
+          },
         },
         backgroundColor: "rgba(0,0,0,0)",
         backgroundColorRgba: {

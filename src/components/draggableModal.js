@@ -1,15 +1,15 @@
 import React, { useState } from "react";
 import Draggable from "react-draggable";
 import styled from "@emotion/styled";
-import { css } from "@emotion/react";
 import {
   Container,
   DraggableParent,
   DraggableChild,
   DraggableContent,
   Button,
+  mq
 } from "../emotions";
-import { SketchPicker, ChromePicker } from "react-color";
+import { SketchPicker } from "react-color";
 
 const inputStyle = { display: "inline", width: "auto" };
 const ComponentBox = styled.div({
@@ -23,6 +23,35 @@ const ComponentBox = styled.div({
   ".aLine": {
     display: "flex",
     justifyContent: "space-between",
+    alignItems: "center",
+    height: "1.7em",
+    "input[type='range']":{
+      width:"7em",
+      verticalAlign: "middle"
+    },
+    "input[type='text']":{
+      width: "2em",
+      border: "1px solid lightgray",
+      height: "1em",
+    },
+    [mq[1]]:{
+      input:{
+        fontSize: "inherit",
+        height: "100%",
+        verticalAlign: "middle",
+      },
+      button:{
+        fontSize: "inherit",
+        height: "80%",
+        verticalAlign: "middle",
+      },
+      select:{
+        fontSize: "inherit",
+        height: "80%",
+        verticalAlign: "middle",
+      }
+    },
+    
   },
 });
 const ComponentTitle = styled.div({
@@ -50,6 +79,7 @@ const components = {
     display: true,
     fontFamily: true,
     color: true,
+    textShadow: true,
     backgroundColor: true,
   },
   question: {
@@ -57,6 +87,7 @@ const components = {
     display: true,
     fontFamily: true,
     color: true,
+    textShadow: true,
     backgroundColor: true,
   },
   answer: {
@@ -64,6 +95,7 @@ const components = {
     display: true,
     fontFamily: true,
     color: true,
+    textShadow: true,
     backgroundColor: true,
   },
   button: {
@@ -71,6 +103,7 @@ const components = {
     display: false,
     fontFamily: true,
     color: true,
+    textShadow: true,
     backgroundColor: true,
   },
 };
@@ -101,6 +134,28 @@ export default function DraggableModal(props) {
     bottom: "0px",
     left: "0px",
   };
+  const updateTextShadow = (component, textShadowProps) => {
+    let out = ""
+    out += textShadowProps.x + "px "
+    out += textShadowProps.y + "px "
+    out += textShadowProps.blur + "px "
+    out += "rgba("
+    out += textShadowProps.rgba.r + ", "
+    out += textShadowProps.rgba.g + ", "
+    out += textShadowProps.rgba.b + ", "
+    out += textShadowProps.rgba.a + ")"
+    handleStyles("textShadowProps", component, textShadowProps)
+    handleStyles("textShadow", component, out);
+  }
+  const makeRgba = (rgba) => {
+    let out = ""
+    out += "rgba("
+    out += rgba.r + ", "
+    out += rgba.g + ", "
+    out += rgba.b + ", "
+    out += rgba.a + ")"
+    return out
+  }
 
   function colorChange(id, componentName, value) {
     // console.log(id+"Rgba", componentName, value, styles[componentName][id+"Rgba"]);
@@ -132,7 +187,7 @@ export default function DraggableModal(props) {
             </div>
             <DraggableContent className="row">
               {Object.keys(components).map((value, index) => (
-                <ComponentBox key={value.name}>
+                <ComponentBox key={value}>
                   <ComponentTitle>{components[value].name} 설정</ComponentTitle>
                   {components[value].display && (
                     <div className="aLine">
@@ -146,9 +201,27 @@ export default function DraggableModal(props) {
                         }
                         onChange={(e) => {
                           handleStyles(
-                            e,
+                            e.target.id,
                             String(value),
                             e.target.checked ? "none" : "block"
+                          );
+                        }}
+                      />
+                    </div>
+                  )}
+                  {value==="button" && (
+                    <div className="aLine">
+                      아이콘 버튼 사용하기
+                      <input
+                        style={inputStyle}
+                        type="checkbox"
+                        id="iconButton"
+                        checked={styles[value].iconButton}
+                        onChange={(e) => {
+                          handleStyles(
+                            e.target.id,
+                            String(value),
+                            e.target.checked ? true : false
                           );
                         }}
                       />
@@ -161,7 +234,7 @@ export default function DraggableModal(props) {
                         id="fontFamily"
                         value={styles[value].fontFamily}
                         onChange={(e) => {
-                          handleStyles(e, String(value), e.target.value);
+                          handleStyles(e.target.id, String(value), e.target.value);
                         }}
                       >
                         <option value="UhBeeJJIBBABBA">어비 찌빠빠체</option>
@@ -208,6 +281,89 @@ export default function DraggableModal(props) {
                         </div>
                       ) : null}
                     </div>
+                  )}
+                  {components[value].textShadow && (
+                    <div className="aLine">
+                      글자 그림자 사용하기
+                      <input
+                        style={inputStyle}
+                        type="checkbox"
+                        id="useTextShadow"
+                        checked={styles[value].useTextShadow}
+                        onChange={(e) => {
+                          handleStyles(
+                            e.target.id,
+                            String(value),
+                            e.target.checked ? true : false
+                          );
+                          if(e.target.checked){
+                            updateTextShadow(String(value), styles[value].textShadowProps)
+                          }else{
+                            handleStyles("textShadow", String(value), "unset")
+                          }
+                        }}
+                      />
+                    </div>
+                  )}
+                  {styles[value].useTextShadow && (
+                    <>
+                    <div className="aLine">
+                      ㄴ 글자 그림자 색
+                      <div>
+                        <ColorChip color={makeRgba(styles[value].textShadowProps.rgba)}/>
+                        <button
+                          id="textShadowColor"
+                          onClick={(e) => {
+                            setPickerOpen(value + e.target.id);
+                            console.log(pickerOpen);
+                          }}
+                        >색상 선택
+                        </button>
+                      </div>
+                      {pickerOpen === String(value + "textShadowColor") ? (
+                        <div style={popover}>
+                          <div
+                            style={cover}
+                            onClick={() => setPickerOpen("none")}
+                          />
+                          <SketchPicker
+                            id="color"
+                            color={styles[value].textShadowProps.rgba}
+                            onChange={(e) =>{
+                              updateTextShadow(String(value), {...styles[value].textShadowProps, rgba:e.rgb})
+                            }}
+                          ></SketchPicker>
+                        </div>
+                      ) : null}
+                    </div>
+                    <div className="aLine">
+                      ㄴ 그림자 거리 (가로)
+                      <div>
+                        {styles[value].textShadowProps.x}
+                        <input type="range" value={styles[value].textShadowProps.x} id="textShadowProps.x" min="-10" max="10" onChange={(e)=>{
+                          updateTextShadow(String(value), {...styles[value].textShadowProps, x:e.target.value})
+                        }} />
+                      </div>
+                    </div>
+                    <div className="aLine">
+                      ㄴ 그림자 거리 (세로)
+                      <div>
+                        {styles[value].textShadowProps.y}
+                        <input type="range" value={styles[value].textShadowProps.y} id="textShadowProps.y" min="-10" max="10" onChange={(e)=>{
+                          updateTextShadow(String(value), {...styles[value].textShadowProps, y:e.target.value})
+                        }} />
+                      </div>
+                    </div>
+                    <div className="aLine">
+                      ㄴ 그림자 흐리기
+                      <div>
+                        {styles[value].textShadowProps.blur}
+                        <input type="range" value={styles[value].textShadowProps.blur} id="textShadowProps.blur" min="0" max="30" onChange={(e)=>{
+                          updateTextShadow(String(value), {...styles[value].textShadowProps, blur:e.target.value})
+                        }} />
+                      </div>
+                    </div>
+                    </>
                   )}
                   {components[value].backgroundColor && (
                     <div className="aLine">

@@ -3,6 +3,11 @@ import styled from "@emotion/styled"
 
 const shadowGray = "rgba(206, 206, 206, 0.3)"
 
+const breakpoints = [400,800,1024]
+export const mq = breakpoints.map(
+  bp => `@media (max-width: ${bp}px)`
+)
+
 const containerStyle = props => 
       css`
         // background-color: cornsilk;
@@ -41,7 +46,8 @@ export const Header = styled.header({
       "& input":{
         width: "100%",
         fontSize: "1em",
-        fontFamily: "Pretendard Medium"
+        fontFamily: "inherit",
+        textAlign: "center",
       }
     }
 }, props=>(props.styles))
@@ -98,7 +104,9 @@ export const QuestionBubble = styled.div({
         width: "30em",
         maxWidth: "100%",
         input:{
+            textShadow: "inherit",
             fontFamily: "inherit",
+            color: "inherit",
             padding: "none",
             margin: "none",
             fontSize: "1em",
@@ -112,7 +120,6 @@ export const QuestionBubble = styled.div({
 export const AnswerBubble = styled.div({
         backgroundColor: "white",
         willChange: "filter",
-        // boxShadow: ""5px 5px 10px $shadow-gray",
         filter: "drop-shadow(5px 5px 10px "+shadowGray+")",
         padding: "1em 1.2em",
         borderRadius: "1.5em",
@@ -128,7 +135,9 @@ export const AnswerBubble = styled.div({
             whiteSpace: "pre-wrap",
         },
         textarea:{
+            textShadow: "inherit",
             fontFamily: "inherit",
+            color: "inherit",
             fontSize: "1em",
             width: "100%",
             height: "100%",
@@ -162,14 +171,19 @@ export const DraggableParent = styled.div(
     zIndex: 200,
     backgroundColor: "white",
     position: "absolute",
-    top: "calc(50vh - 7.5em)",
+    top: "calc(50vh - 8.5em)",
     left: "calc(50vw - 15em)",
     border: "1px solid lightgray",
     borderRadius: "1em",
     boxShadow: "2px 2px 5px gray",
     paddingTop: ".3em",
     resize: "both",
-    fontFamily: "Pretendard-Regular"
+    fontFamily: "Pretendard-Regular",
+    [mq[1]]:{
+        width: "100vw",
+        height: "70vh",
+        top: "100vh"
+    }
   });
   
   export const DraggableContent = styled.div({

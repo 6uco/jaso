@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import "../styles/bubbles.scss";
-import {QuestionBubble, AnswerBubble} from "../emotions"
+import {QuestionBubble, AnswerBubble, Button} from "../emotions"
 
 export default function QuestionCell(props) {
-  const { custom, index, questionInfo, setQuestionInfo, removeQuestion, questionStyle, answerStyle } = props;
+  const { custom, index, questionInfo, setQuestionInfo, removeQuestion, questionStyle, answerStyle, buttonStyle } = props;
   const [edit, setEdit] = useState("");
 
   // useEffect(() => {
@@ -42,9 +42,9 @@ export default function QuestionCell(props) {
             {questionInfo.question ? questionInfo.question : "여기를 클릭해서 질문 내용을 입력!!"}
           </QuestionBubble>
         )}
-        <div className="button small ignore" onClick={()=>removeQuestion(index)}>
+        <Button styles={buttonStyle} className="small ignore" onClick={()=>removeQuestion(index)}>
         <span className="material-icons">delete</span>
-        </div>
+        </Button>
       </div>
       <AnswerBubble styles={answerStyle}>
       {edit === "answer" ? (
