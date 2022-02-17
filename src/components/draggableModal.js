@@ -160,7 +160,7 @@ export default function DraggableModal(props) {
   function colorChange(id, componentName, value) {
     // console.log(id+"Rgba", componentName, value, styles[componentName][id+"Rgba"]);
     handleStyles(
-      { target: { id: id } },
+      id,
       componentName,
       "rgba(" + value.r + ", " + value.g + ", " + value.b + ", " + value.a + ")"
     );
