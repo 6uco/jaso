@@ -7,9 +7,10 @@ import {
   DraggableChild,
   DraggableContent,
   Button,
-  mq
+  mq,
 } from "../emotions";
 import { SketchPicker } from "react-color";
+import { imageEncoder } from "./imageEncoder";
 
 const inputStyle = { display: "inline", width: "auto" };
 const ComponentBox = styled.div({
@@ -26,33 +27,32 @@ const ComponentBox = styled.div({
     justifyContent: "space-between",
     alignItems: "center",
     height: "1.7em",
-    "input[type='range']":{
-      width:"7em",
-      verticalAlign: "middle"
+    "input[type='range']": {
+      width: "7em",
+      verticalAlign: "middle",
     },
-    "input[type='text']":{
+    "input[type='text']": {
       width: "2em",
       border: "1px solid lightgray",
       height: "1em",
     },
-    [mq[1]]:{
-      input:{
+    [mq[1]]: {
+      input: {
         fontSize: "inherit",
         height: "100%",
         verticalAlign: "middle",
       },
-      button:{
+      button: {
         fontSize: "inherit",
         height: "80%",
         verticalAlign: "middle",
       },
-      select:{
+      select: {
         fontSize: "inherit",
         height: "80%",
         verticalAlign: "middle",
-      }
+      },
     },
-    
   },
 });
 const ComponentTitle = styled.div({
@@ -61,7 +61,7 @@ const ComponentTitle = styled.div({
   fontWeight: "800",
   borderBottom: "1px solid gray",
   marginBottom: ".2em",
-  fontFamily: "UhBeeJJIBBABBA"
+  fontFamily: "UhBeeJJIBBABBA",
 });
 const ColorChip = styled.div(
   {
@@ -73,17 +73,15 @@ const ColorChip = styled.div(
   },
   (props) => ({ backgroundColor: props.color })
 );
-const ContentWrapper = styled.div(
-  {
-    height: "calc(100% - 1em)",
-    boxSizing: "border-box",
-    overflow: "auto",
-    "::-webkit-scrollbar": {
-      width: "0px",
-      background: "transparent" /* make scrollbar transparent */,
-    },
-  }
-)
+const ContentWrapper = styled.div({
+  height: "calc(100% - 1em)",
+  boxSizing: "border-box",
+  overflow: "auto",
+  "::-webkit-scrollbar": {
+    width: "0px",
+    background: "transparent" /* make scrollbar transparent */,
+  },
+});
 
 const components = {
   header: {
@@ -95,6 +93,7 @@ const components = {
     backgroundColor: true,
     boxShadow: true,
     filterShadow: true,
+    backgroundImage: true,
   },
   question: {
     name: "말풍선1",
@@ -105,6 +104,7 @@ const components = {
     backgroundColor: true,
     boxShadow: true,
     filterShadow: true,
+    backgroundImage: true,
   },
   answer: {
     name: "말풍선2",
@@ -115,6 +115,7 @@ const components = {
     backgroundColor: true,
     boxShadow: true,
     filterShadow: true,
+    backgroundImage: true,
   },
   button: {
     name: "버튼",
@@ -125,6 +126,7 @@ const components = {
     backgroundColor: true,
     boxShadow: true,
     filterShadow: true,
+    backgroundImage: true,
   },
 };
 
@@ -147,7 +149,7 @@ export default function DraggableModal(props) {
     zIndex: "300",
     backgroundColor: "aliceblue",
     bottom: 0,
-    margin: "auto"
+    margin: "auto",
   };
   const cover = {
     position: "fixed",
@@ -157,31 +159,31 @@ export default function DraggableModal(props) {
     left: "0px",
   };
   const updateShadow = (name, component, shadowProps) => {
-    let out = ""
-    out += shadowProps.x + "px "
-    out += shadowProps.y + "px "
-    out += shadowProps.blur + "px "
-    out += "rgba("
-    out += shadowProps.rgba.r + ", "
-    out += shadowProps.rgba.g + ", "
-    out += shadowProps.rgba.b + ", "
-    out += shadowProps.rgba.a + ")"
-    handleStyles(name + "ShadowProps", component, shadowProps)
-    if(name === "filter"){
-      handleStyles("filter", component, "drop-shadow("+out+")")
-    }else{
+    let out = "";
+    out += shadowProps.x + "px ";
+    out += shadowProps.y + "px ";
+    out += shadowProps.blur + "px ";
+    out += "rgba(";
+    out += shadowProps.rgba.r + ", ";
+    out += shadowProps.rgba.g + ", ";
+    out += shadowProps.rgba.b + ", ";
+    out += shadowProps.rgba.a + ")";
+    handleStyles(name + "ShadowProps", component, shadowProps);
+    if (name === "filter") {
+      handleStyles("filter", component, "drop-shadow(" + out + ")");
+    } else {
       handleStyles(name + "Shadow", component, out);
     }
-  }
+  };
   const makeRgba = (rgba) => {
-    let out = ""
-    out += "rgba("
-    out += rgba.r + ", "
-    out += rgba.g + ", "
-    out += rgba.b + ", "
-    out += rgba.a + ")"
-    return out
-  }
+    let out = "";
+    out += "rgba(";
+    out += rgba.r + ", ";
+    out += rgba.g + ", ";
+    out += rgba.b + ", ";
+    out += rgba.a + ")";
+    return out;
+  };
 
   function colorChange(id, componentName, value) {
     // console.log(id+"Rgba", componentName, value, styles[componentName][id+"Rgba"]);
@@ -207,328 +209,468 @@ export default function DraggableModal(props) {
           <DraggableChild>
             <div
               className="handle"
-              style={{ cursor: "move", textAlign: "center", position: "sticky" }}
+              style={{
+                cursor: "move",
+                textAlign: "center",
+                position: "sticky",
+              }}
             >
               <span className="material-icons">drag_handle</span>
             </div>
             <ContentWrapper>
-            <DraggableContent className="row">
-              {Object.keys(components).map((value, index) => (
-                <ComponentBox key={value}>
-                  <ComponentTitle>{components[value].name} 설정</ComponentTitle>
-                  {components[value].display && (
-                    <div className="aLine">
-                      숨기기
-                      <input
-                        style={inputStyle}
-                        type="checkbox"
-                        id="display"
-                        checked={
-                          styles[value].display === "none" ? "checked" : ""
-                        }
-                        onChange={(e) => {
-                          handleStyles(
-                            e.target.id,
-                            String(value),
-                            e.target.checked ? "none" : "block"
-                          );
-                        }}
-                      />
-                    </div>
-                  )}
-                  {value==="button" && (
-                    <div className="aLine">
-                      아이콘 버튼 사용하기
-                      <input
-                        style={inputStyle}
-                        type="checkbox"
-                        id="iconButton"
-                        checked={styles[value].iconButton}
-                        onChange={(e) => {
-                          handleStyles(
-                            e.target.id,
-                            String(value),
-                            e.target.checked ? true : false
-                          );
-                        }}
-                      />
-                    </div>
-                  )}
-                  {components[value].fontFamily && (
-                    <div className="aLine">
-                      폰트
-                      <select
-                        id="fontFamily"
-                        value={styles[value].fontFamily}
-                        onChange={(e) => {
-                          handleStyles(e.target.id, String(value), e.target.value);
-                        }}
-                      >
-                        <option value="UhBeeJJIBBABBA">어비 찌빠빠체</option>
-                        <option value="Pretendard-Regular">프리텐다드</option>
-                        <option value="HS-Regular">HS산토끼체</option>
-                        <option value="SANGJUGyeongcheonIsland">
-                          상주경천섬체
-                        </option>
-                        <option value="CookieRunOTF-Black">쿠키런 Black</option>
-                        <option value="KOTRA_SONGEULSSI">
-                          코트라 손글씨체
-                        </option>
-                        <option value='Pretendard-Light'>프리텐다드 Light</option>
-                        <option value='Pretendard-Black'>프리텐다드 Black</option>
-                        <option value="PFStardust">PF스타더스트</option>
-                        <option value="BMEuljiro10yearslater">을지로10년후체</option>
-                      </select>
-                    </div>
-                  )}
-                  {components[value].color && (
-                    <div className="aLine">
-                      글자 색
-                      <div>
-                      <ColorChip color={styles[value].color} />
-                        <button
-                          id="color"
-                          onClick={(e) => {
-                            setPickerOpen(value + e.target.id);
-                            console.log(pickerOpen);
-                          }}
-                        >
-                          색상 선택
-                        </button>
-                      </div>
-                      {pickerOpen === String(value + "color") ? (
-                        <div style={{position: "absolute"}}>
-                        <div style={popover}>
-                          <div
-                            style={cover}
-                            onClick={() => setPickerOpen("none")}
-                          />
-                          <SketchPicker
-                            id="color"
-                            color={styles[value].colorRgba}
-                            onChange={(e) =>
-                              colorChange("color", String(value), e.rgb)
-                            }
-                          ></SketchPicker>
-                        </div>
-                        </div>
-                      ) : null}
-                    </div>
-                  )}
-                  {components[value].textShadow && (
-                    <div className="aLine">
-                      글자 그림자 사용하기
-                      <input
-                        style={inputStyle}
-                        type="checkbox"
-                        id="useTextShadow"
-                        checked={styles[value].useTextShadow}
-                        onChange={(e) => {
-                          handleStyles(
-                            e.target.id,
-                            String(value),
-                            e.target.checked ? true : false
-                          );
-                          if(e.target.checked){
-                            updateShadow("text", String(value), styles[value].textShadowProps)
-                          }else{
-                            handleStyles("textShadow", String(value), "unset")
+              <DraggableContent className="row">
+                {Object.keys(components).map((value, index) => (
+                  <ComponentBox key={value}>
+                    <ComponentTitle>
+                      {components[value].name} 설정
+                    </ComponentTitle>
+                    {components[value].display && (
+                      <div className="aLine">
+                        숨기기
+                        <input
+                          style={inputStyle}
+                          type="checkbox"
+                          id="display"
+                          checked={
+                            styles[value].display === "none" ? "checked" : ""
                           }
-                        }}
-                      />
-                    </div>
-                  )}
-                  {styles[value].useTextShadow && (
-                    <>
-                    <div className="aLine">
-                      ㄴ 글자 그림자 색
-                      <div>
-                        <ColorChip color={makeRgba(styles[value].textShadowProps.rgba)}/>
-                        <button
-                          id="textShadowColor"
-                          onClick={(e) => {
-                            setPickerOpen(value + e.target.id);
-                            console.log(pickerOpen);
+                          onChange={(e) => {
+                            handleStyles(
+                              e.target.id,
+                              String(value),
+                              e.target.checked ? "none" : "block"
+                            );
                           }}
-                        >색상 선택
-                        </button>
+                        />
                       </div>
-                      {pickerOpen === String(value + "textShadowColor") ? (
-                        <div style={popover}>
-                          <div
-                            style={cover}
-                            onClick={() => setPickerOpen("none")}
-                          />
-                          <SketchPicker
-                            id="color"
-                            color={styles[value].textShadowProps.rgba}
-                            onChange={(e) =>{
-                              updateShadow("text", String(value), {...styles[value].textShadowProps, rgba:e.rgb})
-                            }}
-                          ></SketchPicker>
-                        </div>
-                      ) : null}
-                    </div>
-                    <div className="aLine">
-                      ㄴ 글자 그림자 거리 (가로)
-                      <div>
-                        {styles[value].textShadowProps.x}
-                        <input type="range" value={styles[value].textShadowProps.x} id="textShadowProps.x" min="-10" max="10" onChange={(e)=>{
-                          updateShadow("text", String(value), {...styles[value].textShadowProps, x:e.target.value})
-                        }} />
+                    )}
+                    {value === "button" && (
+                      <div className="aLine">
+                        아이콘 버튼 사용하기
+                        <input
+                          style={inputStyle}
+                          type="checkbox"
+                          id="iconButton"
+                          checked={styles[value].iconButton}
+                          onChange={(e) => {
+                            handleStyles(
+                              e.target.id,
+                              String(value),
+                              e.target.checked ? true : false
+                            );
+                          }}
+                        />
                       </div>
-                    </div>
-                    <div className="aLine">
-                      ㄴ 글자 그림자 거리 (세로)
-                      <div>
-                        {styles[value].textShadowProps.y}
-                        <input type="range" value={styles[value].textShadowProps.y} id="textShadowProps.y" min="-10" max="10" onChange={(e)=>{
-                          updateShadow("text", String(value), {...styles[value].textShadowProps, y:e.target.value})
-                        }} />
-                      </div>
-                    </div>
-                    <div className="aLine">
-                      ㄴ 글자 그림자 흐리기
-                      <div>
-                        {styles[value].textShadowProps.blur}
-                        <input type="range" value={styles[value].textShadowProps.blur} id="textShadowProps.blur" min="0" max="30" onChange={(e)=>{
-                          updateShadow("text", String(value), {...styles[value].textShadowProps, blur:e.target.value})
-                        }} />
-                      </div>
-                    </div>
-                    </>
-                  )}
-                  {components[value].backgroundColor && (
-                    <div className="aLine">
-                      배경 색
-                      <div>
-                      <ColorChip color={styles[value].backgroundColor} />
-                        <button
-                          id="backgroundColor"
-                          onClick={(e) => {
-                            setPickerOpen(value + e.target.id);
-                            console.log(pickerOpen);
+                    )}
+                    {components[value].fontFamily && (
+                      <div className="aLine">
+                        폰트
+                        <select
+                          id="fontFamily"
+                          value={styles[value].fontFamily}
+                          onChange={(e) => {
+                            handleStyles(
+                              e.target.id,
+                              String(value),
+                              e.target.value
+                            );
                           }}
                         >
-                          색상 선택
-                        </button>
+                          <option value="UhBeeJJIBBABBA">어비 찌빠빠체</option>
+                          <option value="Pretendard-Regular">프리텐다드</option>
+                          <option value="HS-Regular">HS산토끼체</option>
+                          <option value="SANGJUGyeongcheonIsland">
+                            상주경천섬체
+                          </option>
+                          <option value="CookieRunOTF-Black">
+                            쿠키런 Black
+                          </option>
+                          <option value="KOTRA_SONGEULSSI">
+                            코트라 손글씨체
+                          </option>
+                          <option value="Pretendard-Light">
+                            프리텐다드 Light
+                          </option>
+                          <option value="Pretendard-Black">
+                            프리텐다드 Black
+                          </option>
+                          <option value="PFStardust">PF스타더스트</option>
+                          <option value="BMEuljiro10yearslater">
+                            을지로10년후체
+                          </option>
+                        </select>
                       </div>
-                      {pickerOpen === String(value + "backgroundColor") ? (
-                        <div style={popover}>
-                          <div
-                            style={cover}
-                            onClick={() => setPickerOpen("none")}
-                          />
-                          <SketchPicker
-                            id="backgroundColor"
-                            color={styles[value].backgroundColorRgba}
-                            onChange={(e) =>
-                              colorChange(
-                                "backgroundColor",
+                    )}
+                    {components[value].color && (
+                      <div className="aLine">
+                        글자 색
+                        <div>
+                          <ColorChip color={styles[value].color} />
+                          <button
+                            id="color"
+                            onClick={(e) => {
+                              setPickerOpen(value + e.target.id);
+                              console.log(pickerOpen);
+                            }}
+                          >
+                            색상 선택
+                          </button>
+                        </div>
+                        {pickerOpen === String(value + "color") ? (
+                          <div style={{ position: "absolute" }}>
+                            <div style={popover}>
+                              <div
+                                style={cover}
+                                onClick={() => setPickerOpen("none")}
+                              />
+                              <SketchPicker
+                                id="color"
+                                color={styles[value].colorRgba}
+                                onChange={(e) =>
+                                  colorChange("color", String(value), e.rgb)
+                                }
+                              ></SketchPicker>
+                            </div>
+                          </div>
+                        ) : null}
+                      </div>
+                    )}
+                    {components[value].textShadow && (
+                      <div className="aLine">
+                        글자 그림자 사용하기
+                        <input
+                          style={inputStyle}
+                          type="checkbox"
+                          id="useTextShadow"
+                          checked={styles[value].useTextShadow}
+                          onChange={(e) => {
+                            handleStyles(
+                              e.target.id,
+                              String(value),
+                              e.target.checked ? true : false
+                            );
+                            if (e.target.checked) {
+                              updateShadow(
+                                "text",
                                 String(value),
-                                e.rgb
-                              )
+                                styles[value].textShadowProps
+                              );
+                            } else {
+                              handleStyles(
+                                "textShadow",
+                                String(value),
+                                "unset"
+                              );
                             }
-                          ></SketchPicker>
-                        </div>
-                      ) : null}
-                    </div>
-                  )}
-                  {components[value].boxShadow && (
-                    <div className="aLine">
-                      사각 그림자 사용하기
-                      <input
-                        style={inputStyle}
-                        type="checkbox"
-                        id="useBoxShadow"
-                        checked={styles[value].useBoxShadow}
-                        onChange={(e) => {
-                          handleStyles(
-                            e.target.id,
-                            String(value),
-                            e.target.checked ? true : false
-                          );
-                          if(e.target.checked){
-                            updateShadow("box", String(value), styles[value].boxShadowProps)
-                          }else{
-                            handleStyles("boxShadow", String(value), "unset")
-                          }
-                        }}
-                      />
-                    </div>
-                  )}
-                  {styles[value].useBoxShadow && (
-                    <>
-                    <div className="aLine">
-                      ㄴ 사각 그림자 색
-                      <div>
-                        <ColorChip color={makeRgba(styles[value].boxShadowProps.rgba)}/>
-                        <button
-                          id="boxShadowColor"
-                          onClick={(e) => {
-                            setPickerOpen(value + e.target.id);
-                            console.log(pickerOpen);
                           }}
-                        >색상 선택
-                        </button>
+                        />
                       </div>
-                      {pickerOpen === String(value + "boxShadowColor") ? (
-                        <div style={popover}>
-                          <div
-                            style={cover}
-                            onClick={() => setPickerOpen("none")}
-                          />
-                          <SketchPicker
-                            id="color"
-                            color={styles[value].boxShadowProps.rgba}
-                            onChange={(e) =>{
-                              updateShadow("box", String(value), {...styles[value].boxShadowProps, rgba:e.rgb})
-                            }}
-                          ></SketchPicker>
+                    )}
+                    {styles[value].useTextShadow && (
+                      <>
+                        <div className="aLine">
+                          ㄴ 글자 그림자 색
+                          <div>
+                            <ColorChip
+                              color={makeRgba(
+                                styles[value].textShadowProps.rgba
+                              )}
+                            />
+                            <button
+                              id="textShadowColor"
+                              onClick={(e) => {
+                                setPickerOpen(value + e.target.id);
+                                console.log(pickerOpen);
+                              }}
+                            >
+                              색상 선택
+                            </button>
+                          </div>
+                          {pickerOpen === String(value + "textShadowColor") ? (
+                            <div style={popover}>
+                              <div
+                                style={cover}
+                                onClick={() => setPickerOpen("none")}
+                              />
+                              <SketchPicker
+                                id="color"
+                                color={styles[value].textShadowProps.rgba}
+                                onChange={(e) => {
+                                  updateShadow("text", String(value), {
+                                    ...styles[value].textShadowProps,
+                                    rgba: e.rgb,
+                                  });
+                                }}
+                              ></SketchPicker>
+                            </div>
+                          ) : null}
                         </div>
-                      ) : null}
-                    </div>
-                    <div className="aLine">
-                      ㄴ 사각 그림자 거리 (가로)
-                      <div>
-                        {styles[value].boxShadowProps.x}
-                        <input type="range" value={styles[value].boxShadowProps.x} id="boxShadowProps.x" min="-10" max="10" onChange={(e)=>{
-                          updateShadow("box", String(value), {...styles[value].boxShadowProps, x:e.target.value})
-                        }} />
+                        <div className="aLine">
+                          ㄴ 글자 그림자 거리 (가로)
+                          <div>
+                            {styles[value].textShadowProps.x}
+                            <input
+                              type="range"
+                              value={styles[value].textShadowProps.x}
+                              id="textShadowProps.x"
+                              min="-10"
+                              max="10"
+                              onChange={(e) => {
+                                updateShadow("text", String(value), {
+                                  ...styles[value].textShadowProps,
+                                  x: e.target.value,
+                                });
+                              }}
+                            />
+                          </div>
+                        </div>
+                        <div className="aLine">
+                          ㄴ 글자 그림자 거리 (세로)
+                          <div>
+                            {styles[value].textShadowProps.y}
+                            <input
+                              type="range"
+                              value={styles[value].textShadowProps.y}
+                              id="textShadowProps.y"
+                              min="-10"
+                              max="10"
+                              onChange={(e) => {
+                                updateShadow("text", String(value), {
+                                  ...styles[value].textShadowProps,
+                                  y: e.target.value,
+                                });
+                              }}
+                            />
+                          </div>
+                        </div>
+                        <div className="aLine">
+                          ㄴ 글자 그림자 흐리기
+                          <div>
+                            {styles[value].textShadowProps.blur}
+                            <input
+                              type="range"
+                              value={styles[value].textShadowProps.blur}
+                              id="textShadowProps.blur"
+                              min="0"
+                              max="30"
+                              onChange={(e) => {
+                                updateShadow("text", String(value), {
+                                  ...styles[value].textShadowProps,
+                                  blur: e.target.value,
+                                });
+                              }}
+                            />
+                          </div>
+                        </div>
+                      </>
+                    )}
+                    {components[value].backgroundColor && (
+                      <div className="aLine">
+                        배경 색
+                        <div>
+                          <ColorChip color={styles[value].backgroundColor} />
+                          <button
+                            id="backgroundColor"
+                            onClick={(e) => {
+                              setPickerOpen(value + e.target.id);
+                              console.log(pickerOpen);
+                            }}
+                          >
+                            색상 선택
+                          </button>
+                        </div>
+                        {pickerOpen === String(value + "backgroundColor") ? (
+                          <div style={popover}>
+                            <div
+                              style={cover}
+                              onClick={() => setPickerOpen("none")}
+                            />
+                            <SketchPicker
+                              id="backgroundColor"
+                              color={styles[value].backgroundColorRgba}
+                              onChange={(e) =>
+                                colorChange(
+                                  "backgroundColor",
+                                  String(value),
+                                  e.rgb
+                                )
+                              }
+                            ></SketchPicker>
+                          </div>
+                        ) : null}
                       </div>
-                    </div>
-                    <div className="aLine">
-                      ㄴ 사각 그림자 거리 (세로)
-                      <div>
-                        {styles[value].boxShadowProps.y}
-                        <input type="range" value={styles[value].boxShadowProps.y} id="boxShadowProps.y" min="-10" max="10" onChange={(e)=>{
-                          updateShadow("box", String(value), {...styles[value].boxShadowProps, y:e.target.value})
-                        }} />
+                    )}
+                    {components[value].backgroundImage && (
+                      <div className="aLine">
+                        배경 이미지
+                        <div>
+                          <button
+                            onClick={() =>
+                              document.getElementById("backgroundImage").click()
+                            }
+                          >
+                            이미지 선택
+                          </button>
+                          <input
+                            type="file"
+                            id="backgroundImage"
+                            name="avatar"
+                            accept="image/png, image/jpeg"
+                            style={{ display: "none" }}
+                            onChange={(e) => {
+                              imageEncoder(e.target.files[0]).then(
+                                data => {
+                                  console.log(String(value));
+                                  // TODO : 배경 이외의 컴포넌트에 적용되지 않음
+                                  handleStyles(e.target.id, String(value), "url("+data+")")
+                                }
+                              )
+                            }}
+                          />
+                        </div>
                       </div>
-                    </div>
-                    <div className="aLine">
-                      ㄴ 사각 그림자 흐리기
-                      <div>
-                        {styles[value].boxShadowProps.blur}
-                        <input type="range" value={styles[value].boxShadowProps.blur} id="boxShadowProps.blur" min="0" max="30" onChange={(e)=>{
-                          updateShadow("box", String(value), {...styles[value].boxShadowProps, blur:e.target.value})
-                        }} />
+                    )}
+                    {components[value].boxShadow && (
+                      <div className="aLine">
+                        사각 그림자 사용하기
+                        <input
+                          style={inputStyle}
+                          type="checkbox"
+                          id="useBoxShadow"
+                          checked={styles[value].useBoxShadow}
+                          onChange={(e) => {
+                            handleStyles(
+                              e.target.id,
+                              String(value),
+                              e.target.checked ? true : false
+                            );
+                            if (e.target.checked) {
+                              updateShadow(
+                                "box",
+                                String(value),
+                                styles[value].boxShadowProps
+                              );
+                            } else {
+                              handleStyles("boxShadow", String(value), "unset");
+                            }
+                          }}
+                        />
                       </div>
-                    </div>
-                    </>
-                  )}
-                </ComponentBox>
-              ))}
-
-            </DraggableContent>
+                    )}
+                    {styles[value].useBoxShadow && (
+                      <>
+                        <div className="aLine">
+                          ㄴ 사각 그림자 색
+                          <div>
+                            <ColorChip
+                              color={makeRgba(
+                                styles[value].boxShadowProps.rgba
+                              )}
+                            />
+                            <button
+                              id="boxShadowColor"
+                              onClick={(e) => {
+                                setPickerOpen(value + e.target.id);
+                                console.log(pickerOpen);
+                              }}
+                            >
+                              색상 선택
+                            </button>
+                          </div>
+                          {pickerOpen === String(value + "boxShadowColor") ? (
+                            <div style={popover}>
+                              <div
+                                style={cover}
+                                onClick={() => setPickerOpen("none")}
+                              />
+                              <SketchPicker
+                                id="color"
+                                color={styles[value].boxShadowProps.rgba}
+                                onChange={(e) => {
+                                  updateShadow("box", String(value), {
+                                    ...styles[value].boxShadowProps,
+                                    rgba: e.rgb,
+                                  });
+                                }}
+                              ></SketchPicker>
+                            </div>
+                          ) : null}
+                        </div>
+                        <div className="aLine">
+                          ㄴ 사각 그림자 거리 (가로)
+                          <div>
+                            {styles[value].boxShadowProps.x}
+                            <input
+                              type="range"
+                              value={styles[value].boxShadowProps.x}
+                              id="boxShadowProps.x"
+                              min="-10"
+                              max="10"
+                              onChange={(e) => {
+                                updateShadow("box", String(value), {
+                                  ...styles[value].boxShadowProps,
+                                  x: e.target.value,
+                                });
+                              }}
+                            />
+                          </div>
+                        </div>
+                        <div className="aLine">
+                          ㄴ 사각 그림자 거리 (세로)
+                          <div>
+                            {styles[value].boxShadowProps.y}
+                            <input
+                              type="range"
+                              value={styles[value].boxShadowProps.y}
+                              id="boxShadowProps.y"
+                              min="-10"
+                              max="10"
+                              onChange={(e) => {
+                                updateShadow("box", String(value), {
+                                  ...styles[value].boxShadowProps,
+                                  y: e.target.value,
+                                });
+                              }}
+                            />
+                          </div>
+                        </div>
+                        <div className="aLine">
+                          ㄴ 사각 그림자 흐리기
+                          <div>
+                            {styles[value].boxShadowProps.blur}
+                            <input
+                              type="range"
+                              value={styles[value].boxShadowProps.blur}
+                              id="boxShadowProps.blur"
+                              min="0"
+                              max="30"
+                              onChange={(e) => {
+                                updateShadow("box", String(value), {
+                                  ...styles[value].boxShadowProps,
+                                  blur: e.target.value,
+                                });
+                              }}
+                            />
+                          </div>
+                        </div>
+                      </>
+                    )}
+                  </ComponentBox>
+                ))}
+              </DraggableContent>
             </ContentWrapper>
 
             <Container as="a" style={{ color: "blue" }}>
-              <Button onClick={onClose} className="small" styles={{
-                marginTop: "1em",
-                width: "auto"
-              }}>닫기</Button>
-                
+              <Button
+                onClick={onClose}
+                className="small"
+                styles={{
+                  marginTop: "1em",
+                  width: "auto",
+                }}
+              >
+                닫기
+              </Button>
             </Container>
           </DraggableChild>
         </Draggable>
