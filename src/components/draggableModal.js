@@ -77,6 +77,7 @@ const ContentWrapper = styled.div({
   height: "calc(100% - 1em)",
   boxSizing: "border-box",
   overflow: "auto",
+  padding: ".5em",
   "::-webkit-scrollbar": {
     width: "0px",
     background: "transparent" /* make scrollbar transparent */,
@@ -94,6 +95,9 @@ const components = {
     boxShadow: true,
     filterShadow: true,
     backgroundImage: true,
+    backgroundSize: true,
+    borderRadius: true,
+    border: true,
   },
   question: {
     name: "말풍선1",
@@ -105,6 +109,9 @@ const components = {
     boxShadow: true,
     filterShadow: true,
     backgroundImage: true,
+    backgroundSize: true,
+    borderRadius: true,
+    border: true,
   },
   answer: {
     name: "말풍선2",
@@ -116,6 +123,9 @@ const components = {
     boxShadow: true,
     filterShadow: true,
     backgroundImage: true,
+    backgroundSize: true,
+    borderRadius: true,
+    border: true,
   },
   button: {
     name: "버튼",
@@ -127,6 +137,9 @@ const components = {
     boxShadow: true,
     filterShadow: true,
     backgroundImage: true,
+    backgroundSize: true,
+    borderRadius: true,
+    border: true,
   },
 };
 
@@ -217,7 +230,21 @@ export default function DraggableModal(props) {
             >
               <span className="material-icons">drag_handle</span>
             </div>
+            <a onClick={onClose}>close</a>
             <ContentWrapper>
+              <ComponentBox style={{ fontSize: ".8em" }}>
+                <ComponentTitle>간편설정</ComponentTitle>
+                <div className="aLine" style={{ justifyContent: "flex-start" }}>
+                  최애와 공부하기
+                  <div>
+                    <input
+                      type="checkbox"
+                      id="useAvatar"
+                      value={styles.useAvatar}
+                    />
+                  </div>
+                </div>
+              </ComponentBox>
               <DraggableContent className="row">
                 {Object.keys(components).map((value, index) => (
                   <ComponentBox key={value}>
@@ -504,9 +531,25 @@ export default function DraggableModal(props) {
                       <div className="aLine">
                         배경 이미지
                         <div>
+                          {styles[value].backgroundImage !== "none" && (
+                            <button
+                              onClick={() =>
+                                handleStyles(
+                                  "backgroundImage",
+                                  String(value),
+                                  "none"
+                                )
+                              }
+                              style={{ color: "red" }}
+                            >
+                              삭제
+                            </button>
+                          )}
                           <button
                             onClick={() =>
-                              document.getElementById("backgroundImage").click()
+                              document
+                                .getElementsByName(value + "backgroundImage")[0]
+                                .click()
                             }
                           >
                             이미지 선택
@@ -514,19 +557,43 @@ export default function DraggableModal(props) {
                           <input
                             type="file"
                             id="backgroundImage"
-                            name="avatar"
+                            name={value + "backgroundImage"}
                             accept="image/png, image/jpeg"
                             style={{ display: "none" }}
                             onChange={(e) => {
-                              imageEncoder(e.target.files[0]).then(
-                                data => {
-                                  console.log(String(value));
-                                  // TODO : 배경 이외의 컴포넌트에 적용되지 않음
-                                  handleStyles(e.target.id, String(value), "url("+data+")")
-                                }
-                              )
+                              console.log("value: ", value);
+                              imageEncoder(e.target.files[0]).then((data) => {
+                                console.log(String(value));
+                                // TODO : 배경 이외의 컴포넌트에 적용되지 않음
+                                handleStyles(
+                                  e.target.id,
+                                  String(value),
+                                  "url(" + data + ")"
+                                );
+                              });
                             }}
                           />
+                        </div>
+                      </div>
+                    )}
+                    {styles[value].backgroundImage !== "none" && (
+                      <div className="aLine">
+                        ㄴ 배경 이미지 크기
+                        <div>
+                          <select
+                            id="backgroundSize"
+                            value={styles[value].backgroundSize}
+                            onChange={(e) =>
+                              handleStyles(
+                                e.target.id,
+                                String(value),
+                                e.target.value
+                              )
+                            }
+                          >
+                            <option value="cover">꽉 채우기</option>
+                            <option value="contain">크기 맞추기</option>
+                          </select>
                         </div>
                       </div>
                     )}
@@ -654,6 +721,160 @@ export default function DraggableModal(props) {
                           </div>
                         </div>
                       </>
+                    )}
+                    {components[value].border && (
+                      <div className="aLine">
+                        테두리 사용하기
+                        <input
+                          type="checkbox"
+                          id="useBorder"
+                          checked={styles[value].useBorder}
+                          style={inputStyle}
+                          onChange={(e) => {
+                            handleStyles(
+                              e.target.id,
+                              String(value),
+                              e.target.checked ? true : false
+                            );
+                            if (e.target.checked) {
+                              handleStyles(
+                                "borderStyle",
+                                String(value),
+                                "solid"
+                              );
+                            } else {
+                              handleStyles(
+                                "borderStyle",
+                                String(value),
+                                "none"
+                              );
+                            }
+                          }}
+                        ></input>
+                      </div>
+                    )}
+                    {styles[value].useBorder && (
+                      <div className="aLine">
+                        ㄴ 테두리 색상
+                        <div>
+                          <ColorChip color={styles[value].borderColor} />
+                          <button
+                            id="borderColor"
+                            onClick={(e) => {
+                              setPickerOpen(value + e.target.id);
+                              console.log(pickerOpen);
+                            }}
+                          >
+                            색상 선택
+                          </button>
+                        </div>
+                        {pickerOpen === String(value + "borderColor") ? (
+                          <div style={popover}>
+                            <div
+                              style={cover}
+                              onClick={() => setPickerOpen("none")}
+                            />
+                            <SketchPicker
+                              id="borderColor"
+                              color={styles[value].borderColorRgba}
+                              onChange={(e) => {
+                                handleStyles(
+                                  "borderColor",
+                                  String(value),
+                                  makeRgba(e.rgb)
+                                );
+                                handleStyles(
+                                  "borderColorRgba",
+                                  String(value),
+                                  e.rgb
+                                );
+                                console.log(e.rgb);
+                              }}
+                            ></SketchPicker>
+                          </div>
+                        ) : null}
+                      </div>
+                    )}
+                    {styles[value].useBorder && (
+                      <div className="aLine">
+                        ㄴ 테두리 모양
+                        <div>
+                          <select
+                            id="borderStyle"
+                            onChange={(e) =>
+                              handleStyles(
+                                e.target.id,
+                                String(value),
+                                e.target.value
+                              )
+                            }
+                          >
+                            <option value="solid">실선</option>
+                            <option value="dotted">점선</option>
+                            <option value="dashed">파선</option>
+                            <option value="double">이중실선</option>
+                            <option value="groove">음각 액자</option>
+                            <option value="ridge">양각 액자</option>
+                            <option value="inset">음각</option>
+                            <option value="outset">양각</option>
+                          </select>
+                        </div>
+                      </div>
+                    )}
+                    {styles[value].useBorder && (
+                      <div className="aLine">
+                        ㄴ 테두리 두께
+                        <div>
+                          {styles[value].borderWidth.slice(0, -2)}
+                          <input
+                            type="range"
+                            value={parseFloat(
+                              styles[value].borderWidth.slice(0, -2)
+                            )}
+                            id="borderWidth"
+                            min="0"
+                            max="20"
+                            step="0.1"
+                            onChange={(e) => {
+                              handleStyles(
+                                e.target.id,
+                                String(value),
+                                e.target.value + "px"
+                              );
+                            }}
+                          />
+                        </div>
+                      </div>
+                    )}
+                    {components[value].borderImage && (
+                      <div className="aLine">
+                        
+                      </div>
+                    )}
+                    {components[value].borderRadius && (
+                      <div className="aLine">
+                        모서리 깎기
+                        <div>
+                          {styles[value].borderRadius.slice(0, -2)}
+                          <input
+                            type="range"
+                            value={parseFloat(
+                              styles[value].borderRadius.slice(0, -2)
+                            )}
+                            id="borderRadius"
+                            min="0"
+                            max="5"
+                            step="0.1"
+                            onChange={(e) => {
+                              handleStyles(
+                                e.target.id,
+                                String(value),
+                                e.target.value + "em"
+                              );
+                            }}
+                          />
+                        </div>
+                      </div>
                     )}
                   </ComponentBox>
                 ))}
