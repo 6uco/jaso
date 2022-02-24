@@ -558,7 +558,7 @@ export default function DraggableModal(props) {
                             type="file"
                             id="backgroundImage"
                             name={value + "backgroundImage"}
-                            accept="image/png, image/jpeg"
+                            accept="image/png, image/jpeg, image/gif"
                             style={{ display: "none" }}
                             onChange={(e) => {
                               console.log("value: ", value);
@@ -848,7 +848,7 @@ export default function DraggableModal(props) {
                     )}
                     {components[value].borderImage && (
                       <div className="aLine">
-                        
+
                       </div>
                     )}
                     {components[value].borderRadius && (
