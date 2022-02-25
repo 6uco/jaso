@@ -89,6 +89,8 @@ const components = {
     name: "헤더",
     display: true,
     fontFamily: true,
+    letterSpacing: true,
+    lineHeight: true,
     color: true,
     textShadow: true,
     backgroundColor: true,
@@ -103,6 +105,8 @@ const components = {
     name: "말풍선1",
     display: true,
     fontFamily: true,
+    letterSpacing: true,
+    lineHeight: true,
     color: true,
     textShadow: true,
     backgroundColor: true,
@@ -117,6 +121,8 @@ const components = {
     name: "말풍선2",
     display: true,
     fontFamily: true,
+    letterSpacing: true,
+    lineHeight: true,
     color: true,
     textShadow: true,
     backgroundColor: true,
@@ -131,6 +137,8 @@ const components = {
     name: "버튼",
     display: false,
     fontFamily: true,
+    letterSpacing: true,
+    lineHeight: true,
     color: true,
     textShadow: true,
     backgroundColor: true,
@@ -141,6 +149,22 @@ const components = {
     borderRadius: true,
     border: true,
   },
+  avatar:{
+    name: "아바타",
+    display: false,
+    fontFamily: false,
+    letterSpacing: false,
+    lineHeight: false,
+    color: false,
+    textShadow: false,
+    backgroundColor: true,
+    boxShadow: true,
+    filterShadow: true,
+    backgroundImage: true,
+    backgroundSize: false,
+    borderRadius: true,
+    border: true,
+  }
 };
 
 export default function DraggableModal(props) {
@@ -325,7 +349,60 @@ export default function DraggableModal(props) {
                           <option value="BMEuljiro10yearslater">
                             을지로10년후체
                           </option>
+                          <option value="IM_Hyemin-Regular">
+                            IM혜민체 Regular
+                          </option>
                         </select>
+                      </div>
+                    )}
+                    {components[value].letterSpacing && (
+                      <div className="aLine">
+                        자간
+                        <div>
+                          {styles[value].letterSpacing.slice(0, -2)}
+                          <input
+                            id="letterSpacing"
+                            type="range"
+                            min="-1"
+                            max="1"
+                            step="0.01"
+                            value={parseFloat(
+                              styles[value].letterSpacing.slice(0, -2)
+                            )}
+                            onChange={(e) =>
+                              handleStyles(
+                                e.target.id,
+                                String(value),
+                                e.target.value + "em"
+                              )
+                            }
+                          />
+                        </div>
+                      </div>
+                    )}
+                    {components[value].lineHeight && (
+                      <div className="aLine">
+                        행간
+                        <div>
+                          {styles[value].lineHeight.slice(0, -1) + "%"}
+                          <input
+                            id="lineHeight"
+                            type="range"
+                            min="0"
+                            max="200"
+                            step="10"
+                            value={parseFloat(
+                              styles[value].lineHeight.slice(0, -1)
+                            )}
+                            onChange={(e) =>
+                              handleStyles(
+                                e.target.id,
+                                String(value),
+                                e.target.value + "%"
+                              )
+                            }
+                          />
+                        </div>
                       </div>
                     )}
                     {components[value].color && (
@@ -577,25 +654,94 @@ export default function DraggableModal(props) {
                       </div>
                     )}
                     {styles[value].backgroundImage !== "none" && (
-                      <div className="aLine">
-                        ㄴ 배경 이미지 크기
-                        <div>
-                          <select
-                            id="backgroundSize"
-                            value={styles[value].backgroundSize}
-                            onChange={(e) =>
-                              handleStyles(
-                                e.target.id,
-                                String(value),
-                                e.target.value
-                              )
-                            }
-                          >
-                            <option value="cover">꽉 채우기</option>
-                            <option value="contain">크기 맞추기</option>
-                          </select>
+                      <>
+                        <div className="aLine">
+                          ㄴ 배경 이미지 크기
+                          <div>
+                            <select
+                              id="backgroundSize"
+                              value={styles[value].backgroundSize}
+                              onChange={(e) =>
+                                handleStyles(
+                                  e.target.id,
+                                  String(value),
+                                  e.target.value
+                                )
+                              }
+                            >
+                              <option value="" selected disabled hidden>
+                                --
+                              </option>
+                              <option value="cover">꽉 채우기</option>
+                              <option value="contain">크기 맞추기</option>
+                              <option value="100% 100%">늘리기</option>
+                              <option value="100%">크기 지정</option>
+                            </select>
+                          </div>
                         </div>
-                      </div>
+                        {styles[value].backgroundSize !== "cover" && styles[value].backgroundSize !== "contain" && styles[value].backgroundSize !== "100% 100%" && (
+                          <div className="aLine">
+                            ㄴㄴ 크기 지정
+                            <div>
+                            {styles[value].backgroundSize}
+                            <input
+                              type="range"
+                              min="0"
+                              max="100"
+                              step="1"
+                              value={parseInt(
+                                styles[value].backgroundSize.slice(0, -1)
+                              )}
+                              onChange={(e) => handleStyles("backgroundSize", String(value), e.target.value+"%")}
+                            />
+                            </div>
+                          </div>
+                        )}
+                        <div className="aLine">
+                          ㄴ 배경 이미지 반복
+                          <div>
+                            <select
+                              id="backgroundRepeat"
+                              value={styles[value].backgroundRepeat}
+                              onChange={(e) =>
+                                handleStyles(
+                                  e.target.id,
+                                  String(value),
+                                  e.target.value
+                                )
+                              }
+                            >
+                              <option value="no-repeat">반복없음</option>
+                              <option value="repeat">반복</option>
+                              <option value="repeat-x">가로</option>
+                              <option value="repeat-y">세로</option>
+                              <option value="space">분배</option>
+                            </select>
+                          </div>
+                        </div>
+                        <div className="aLine">
+                          ㄴ 배경 이미지 위치
+                          <div>
+                            <select
+                              id="backgroundPosition"
+                              value={styles[value].backgroundPosition}
+                              onChange={(e) =>
+                                handleStyles(
+                                  e.target.id,
+                                  String(value),
+                                  e.target.value
+                                )
+                              }
+                            >
+                              <option value="center">중앙</option>
+                              <option value="top">상</option>
+                              <option value="bottom">하</option>
+                              <option value="left">좌</option>
+                              <option value="right">우</option>
+                            </select>
+                          </div>
+                        </div>
+                      </>
                     )}
                     {components[value].boxShadow && (
                       <div className="aLine">
@@ -847,9 +993,7 @@ export default function DraggableModal(props) {
                       </div>
                     )}
                     {components[value].borderImage && (
-                      <div className="aLine">
-
-                      </div>
+                      <div className="aLine"></div>
                     )}
                     {components[value].borderRadius && (
                       <div className="aLine">
