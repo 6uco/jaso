@@ -184,19 +184,19 @@ export const DraggableParent = styled.div(
 
 export const DraggableChild = styled.div({
   width: "30em",
-  height: "17em",
+  height: "25em",
   zIndex: 200,
   overflow: "hidden",
   backgroundColor: "white",
   position: "absolute",
-  top: "calc(50vh - 8.5em)",
+  top: "calc(50vh - 12.5em)",
   left: "calc(50vw - 15em)",
   border: "1px solid lightgray",
   borderRadius: "1em",
   borderBottomRightRadius: 0,
   boxShadow: "2px 2px 5px gray",
   paddingTop: ".3em",
-  resize: "both",
+  //   resize: "both",
   fontFamily: "Pretendard-Regular",
   paddingBottom: "1em",
   [mq[1]]: {
@@ -212,8 +212,8 @@ export const DraggableContent = styled.div({
   textAlign: "center",
   fontSize: ".7em",
   //   display: "flex",
-//   columnCount: 2,
-columnWidth: "19em",
+  //   columnCount: 2,
+  columnWidth: "19em",
   pageBreakInside: "avoid",
   breakInside: "avoid",
   //   flexWrap: "wrap",
@@ -225,3 +225,16 @@ columnWidth: "19em",
   // alignItems: "flex-start",
   // justifyContent: "flex-start"
 });
+
+export const Avatar = styled.div({
+  width: "5em",
+  height: "5em",
+  backgroundColor: "aliceblue",
+  marginRight: ".5em",
+  borderRadius: "4em",
+  backgroundSize: "contain",
+  backgroundImage:
+    "url('https://pbs.twimg.com/profile_images/1298450223438557186/DVjxUmRS_400x400.jpg')",
+backgroundClip: "padding-box",
+boxSizing: "border-box",
+}, props => props.styles);
